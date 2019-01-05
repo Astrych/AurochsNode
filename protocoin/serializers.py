@@ -1,6 +1,7 @@
 import time
 import random
 import hashlib
+import binascii
 import struct
 from io import BytesIO
 from collections import OrderedDict
@@ -557,16 +558,19 @@ class BlockHeader(SerializableMessage):
         self.bits = 0
         self.nonce = 0
         self.txns_count = 0
+        self.sig = 0
 
     def calculate_hash(self):
         """This method will calculate the hash of the block."""
-        hash_fields = ["version", "prev_block", "merkle_root",
-            "timestamp", "bits", "nonce"]
+        hash_fields = [
+            "version", "prev_block", "merkle_root",
+            "timestamp", "bits", "nonce"
+        ]
         serializer = BlockSerializer()
         bin_data = serializer.serialize(self, hash_fields)
-        h = hashlib.sha256(bin_data).digest()
-        h = hashlib.sha256(h).digest()
-        return h[::-1].encode("hex_codec")
+        h = hashlib.scrypt(password=bin_data, salt=bin_data, n=1024, r=1, p=1, maxmem=0, dklen=32)
+        h = int.from_bytes(h, byteorder='little')
+        return "{0:#0{1}x}".format(h, 66)
 
     def __repr__(self):
         return "<%s Version=[%d] Timestamp=[%s] Nonce=[%d] Hash=[%s] Tx Count=[%d]>" % \
@@ -583,6 +587,7 @@ class BlockHeaderSerializer(Serializer):
     bits = fields.UInt32LEField()
     nonce = fields.UInt32LEField()
     txns_count = fields.VariableIntegerField()
+    sig = fields.VariableIntegerField()
 
 class Block(BlockHeader):
     """The block message. This message contains all the transactions
@@ -597,6 +602,7 @@ class Block(BlockHeader):
         self.bits = 0
         self.nonce = 0
         self.txns = []
+        self.vch_block_sig = 0
 
     def __len__(self):
         return len(self.txns)
@@ -619,6 +625,7 @@ class BlockSerializer(Serializer):
     bits = fields.UInt32LEField()
     nonce = fields.UInt32LEField()
     txns = fields.ListField(TxSerializer)
+    vch_block_sig = fields.VariableStringField()
 
 class HeaderVector(SerializableMessage):
     """The header only vector."""
@@ -675,6 +682,23 @@ class GetBlocksSerializer(Serializer):
     block_hashes = fields.BlockLocator()
     hash_stop = fields.Hash()
 
+class GetHeaders(SerializableMessage):
+    """The getheaders command."""
+    command = "getheaders"
+
+    def __init__(self, hashes):
+        self.version = fields.PROTOCOL_VERSION
+        self.hash_count = len(hashes)
+        self.hash_stop = 0
+        self.block_hashes = hashes
+
+class GetHeadersSerializer(Serializer):
+    model_class = GetHeaders
+    version = fields.UInt32LEField()
+    hash_count = fields.VariableIntegerField()
+    block_hashes = fields.BlockLocator()
+    hash_stop = fields.Hash()
+
 
 MESSAGE_MAPPING = {
     "version": VersionSerializer,
@@ -691,5 +715,6 @@ MESSAGE_MAPPING = {
     "mempool": MemPoolSerializer,
     "getaddr": GetAddrSerializer,
     "getblocks": GetBlocksSerializer,
+    "getheaders": GetHeadersSerializer,
     # "alert": AlertSerializer,
 }
