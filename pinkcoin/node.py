@@ -61,6 +61,7 @@ class ProtocolBuffer:
         payload_checksum = MessageHeaderSerializer.calc_checksum(payload)
 
         # Checks if the checksum is valid.
+        # https://bitcoin.stackexchange.com/questions/22882/what-is-the-function-of-the-payload-checksum-field-in-the-bitcoin-protocol
         if payload_checksum != message_header.checksum:
             msg = f"Bad checksum for command {message_header.command}"
             raise InvalidMessageChecksum(msg)
@@ -145,9 +146,6 @@ class Node:
         except NodeDisconnectException:
             print(f"Warning: Peer {peer_name} disconnected")
             await self.close_connection(peer_name)
-        except InvalidMessageChecksum as ex:
-            print(f"Error: {ex} (node {peer_name}). Clossing connetion.")
-            await self.close_connection(peer_name)
         except ConnectionError:
             print(f"Error: connection error for peer {peer_name}")
 
@@ -182,7 +180,11 @@ class Node:
             raise NodeDisconnectException(f"Node {peer_name} disconnected.")
 
         buffer.write(data)
-        message_header, message = buffer.receive_message()
+        try:
+            message_header, message = buffer.receive_message()
+        except InvalidMessageChecksum as ex:
+            print(f"Warning: {ex} (node {peer_name}).")
+            return
 
         if message_header is not None:
             await self.handle_message_header(peer_name, message_header, data)

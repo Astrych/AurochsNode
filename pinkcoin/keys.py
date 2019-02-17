@@ -8,6 +8,8 @@ import ecdsa
 from . import utils
 
 
+# TODO: Add handing of sig verification.
+
 class NetworkPublicKey:
     """This is a representation for network public keys. In this
     class you'll find methods to import/export keys from multiple

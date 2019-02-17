@@ -283,111 +283,97 @@ class PongSerializer(Serializer):
 
     nonce = data_fields.UInt64LEField()
 
-# class CancelAlert(SerializableMessage):
-#     """The cancel alert field."""
+class CancelAlert(SerializableMessage):
+    """The cancel alert field.
+    """
+    def __init__(self):
+        self.cancel = 0
 
-# class CancelAlertSerializer(Serializer):
-#     """The cancel alert serializer."""
-#     model_class = CancelAlert
+class CancelAlertSerializer(Serializer):
+    """The cancel alert serializer.
+    """
+    model_class = CancelAlert
 
-#     field = data_fields.Int32LEField()
+    cancel = data_fields.Int32LEField()
 
-# class SubVerAlert(SerializableMessage):
-#     """The SubVer alert field."""
+class SubVerAlert(SerializableMessage):
+    """The SubVer alert field.
+    """
+    def __init__(self):
+        self.sub_ver = 0
 
-# class SubVerAlertSerializer(Serializer):
-#     """The SubVer alert serializer."""
-#     model_class = SubVerAlert
+class SubVerAlertSerializer(Serializer):
+    """The SubVer alert serializer.
+    """
+    model_class = SubVerAlert
 
-#     field = data_fields.VariableStringField()
+    sub_ver = data_fields.VariableStringField()
 
-# class AlertPayload(SerializableMessage):
-#     """The alert payload message."""
-#     def __init__(self):
-#         self.version = 0
-#         self.relay_until = 0
-#         self.expiration = 0
-#         self.id = 0
-#         self.cancel = 0
-#         self.min_ver = 0
-#         self.max_ver = 0
-#         self.priority = 0
-#         self.status_bar = ""
+class AlertPayload(SerializableMessage):
+    """The alert payload message.
+    """
+    def __init__(self):
+        self.version = 0
+        self.relay_until = 0
+        self.expiration = 0
+        self.alert_id = 0
+        self.cancel = 0
+        self.set_cancel = []
+        self.min_ver = 0
+        self.max_ver = 0
+        self.set_sub_ver = []
+        self.priority = 0
+        self.comment = ""
+        self.status_bar = ""
+        self.reserved = ""
 
-#     def __repr__(self):
-#         return "<%s Message=[%s]>" % (
-#             self.__class__.__name__,
-#             self.status_bar,
-#         )
+    def __repr__(self):
+        return "<{} Message=[{}]>".format(
+            self.__class__.__name__,
+            self.status_bar,
+        )
 
-# class AlertPayloadSerializer(Serializer):
-#     """The alert payload serializer."""
-#     model_class = AlertPayload
+class AlertPayloadSerializer(Serializer):
+    """The alert payload serializer.
+    """
+    model_class = AlertPayload
 
-#     version =  data_fields.Int32LEField()
-#     relay_until = data_fields.Int64LEField() # when newer nodes stop relaying to newer nodes
-#     expiration = data_fields.Int64LEField()
-#     id = data_fields.Int32LEField()
-#     cancel = data_fields.Int32LEField()
-#     len_set_cancel = data_fields.VariableIntegerField()
-#     set_cancel = data_fields.ListField(CancelAlertSerializer)
-#     min_ver = data_fields.Int32LEField() # lowest version inclusive
-#     max_ver = data_fields.Int32LEField() # highest version inclusive
-#     len_set_sub_ver = data_fields.VariableIntegerField() # empty matches all
-#     set_sub_ver = data_fields.ListField(SubVerAlertSerializer)
-#     priority = data_fields.Int32LEField()
-#     comment = data_fields.VariableStringField()
-#     status_bar = data_fields.VariableStringField()
-#     reserved = data_fields.VariableStringField()
+    version = data_fields.Int32LEField()
+    relay_until = data_fields.Int64LEField()
+    expiration = data_fields.Int64LEField()
+    alert_id = data_fields.Int32LEField()
+    cancel = data_fields.Int32LEField()
+    set_cancel = data_fields.ListField(CancelAlertSerializer)
+    min_ver = data_fields.Int32LEField()
+    max_ver = data_fields.Int32LEField()
+    set_sub_ver = data_fields.ListField(SubVerAlertSerializer)
+    priority = data_fields.Int32LEField()
+    comment = data_fields.VariableStringField()
+    status_bar = data_fields.VariableStringField()
+    reserved = data_fields.VariableStringField()
 
-# class Alert(SerializableMessage):
-#     """The alert command."""
-#     command = "alert"
+class Alert(SerializableMessage):
+    """The alert command.
+    """
+    command = "alert"
 
-#     def __init__(self):
-#         # self.version = 1
-#         # self.relay_until = 0
-#         # self.expiration = 0
-#         # self.id = 0
-#         # self.cancel = 0
-#         # self.min_ver = 0
-#         # self.max_ver = 0
-#         # self.priority = 0
-#         # self.status_bar = ""
+    def __init__(self):
+        self.payload = ""
+        self.signature = ""
 
-#         # self.payload = ""
-#         self.signature = ""
+    def __repr__(self):
+        return "<{} Payload=[{}], Signature=[{}]>".format(
+            self.__class__.__name__,
+            self.payload, self.signature,
+        )
 
-#     def __repr__(self):
-#         return "<%s Payload=[%s], Signature=[%s]>" % (
-#             self.__class__.__name__,
-#             self.payload, self.signature,
-#         )
+class AlertSerializer(Serializer):
+    """The alert command serializer.
+    """
+    model_class = Alert
 
-# class AlertSerializer(Serializer):
-#     """The alert command serializer."""
-#     model_class = Alert
-
-#     # version =  data_fields.Int32LEField()
-#     # relay_until = data_fields.Int64LEField() # when newer nodes stop relaying to newer nodes
-#     # expiration = data_fields.Int64LEField()
-#     # id = data_fields.Int32LEField()
-#     # cancel = data_fields.Int32LEField()
-#     # set_cancel = data_fields.VariableIntegerField()
-#     # set_cancel = data_fields.ListField(CancelAlertSerializer)
-#     # min_ver = data_fields.Int32LEField() # lowest version inclusive
-#     # max_ver = data_fields.Int32LEField() # highest version inclusive
-#     # set_sub_ver = data_fields.VariableIntegerField() # empty matches all
-#     # set_sub_ver = data_fields.ListField(SubVerAlertSerializer)
-#     # priority = data_fields.Int32LEField()
-#     # comment = data_fields.VariableStringField()
-#     # status_bar = data_fields.VariableStringField()
-#     # reserved = data_fields.VariableStringField()
-
-#     # payload = data_fields.NestedField(AlertPayloadSerializer)
-#     alert_info = data_fields.NestedField(AlertPayloadSerializer)
-#     # payload = data_fields.VariableStringField()
-#     signature = data_fields.VariableStringField()
+    payload = data_fields.VariableStringField()
+    signature = data_fields.VariableStringField()
 
 class Inventory(SerializableMessage):
     """The Inventory representation.
@@ -785,5 +771,5 @@ MESSAGE_MAPPING = {
     "getaddr": GetAddrSerializer,
     "getblocks": GetBlocksSerializer,
     "getheaders": GetHeadersSerializer,
-    # "alert": AlertSerializer,
+    "alert": AlertSerializer,
 }
