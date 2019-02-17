@@ -1,49 +1,18 @@
+"""Module with serializable fields
+used by serializators/deserializators
+"""
+
 from io import BytesIO
 import struct
-import time
-import random
 import socket
-import sys
 
-from .exceptions import NodeDisconnectException
-
-
-#: The protocol version
-PROTOCOL_VERSION = 60016
-
-#: The network magic values
-MAGIC_VALUES = {
-    "pinkcoin":         0xFBF9F4F2,
-    "pinkcoin_testnet": 0x0D050402,
-}
-
-#: The available services
-SERVICES = {
-    "NODE_NONE": 0,
-    "NODE_NETWORK": (1 << 0),
-    "NODE_GETUTX0": (1 << 1),
-    "NODE_BLOOM": (1 << 2),
-    "NODE_WITNESS": (1 << 3),
-    "NODE_XTHIN": (1 << 4),
-    "NODE_BITCOIN_CASH": (1 << 5),
-    # TODO: 6?
-    "NODE_SEGWIT2X": (1 << 7),
-    # TODO: 8-9?
-    "NODE_NETWORK_LIMITED": (1 << 10),
-}
-
-#: The type of the inventories
-INVENTORY_TYPE = {
-    "ERROR": 0,
-    "MSG_TX": 1,
-    "MSG_BLOCK": 2,
-}
 
 # pylint: disable=E1101
 class Field:
     """Base class for the Fields. This class only implements
     the counter to keep the order of the fields on the
-    serializer classes."""
+    serializer classes.
+    """
     counter = 0
 
     def __init__(self):
@@ -120,31 +89,38 @@ class PrimaryField(Field):
         return data
 
 class Int32LEField(PrimaryField):
-    """32-bit little-endian integer field."""
+    """32-bit little-endian integer field.
+    """
     datatype = "<i"
 
 class UInt32LEField(PrimaryField):
-    """32-bit little-endian unsigned integer field."""
+    """32-bit little-endian unsigned integer field.
+    """
     datatype = "<I"
 
 class Int64LEField(PrimaryField):
-    """64-bit little-endian integer field."""
+    """64-bit little-endian integer field.
+    """
     datatype = "<q"
 
 class UInt64LEField(PrimaryField):
-    """64-bit little-endian unsigned integer field."""
+    """64-bit little-endian unsigned integer field.
+    """
     datatype = "<Q"
 
 class Int16LEField(PrimaryField):
-    """16-bit little-endian integer field."""
+    """16-bit little-endian integer field.
+    """
     datatype = "<h"
 
 class UInt16LEField(PrimaryField):
-    """16-bit little-endian unsigned integer field."""
+    """16-bit little-endian unsigned integer field.
+    """
     datatype = "<H"
 
 class UInt16BEField(PrimaryField):
-    """16-bit big-endian unsigned integer field."""
+    """16-bit big-endian unsigned integer field.
+    """
     datatype = ">H"
 
 class FixedStringField(Field):
@@ -233,7 +209,7 @@ class ListField(Field):
         count = self.var_int.deserialize(stream)
         items = []
         serializer = self.serializer_class()
-        for i in range(count):
+        for _ in range(count):
             data = serializer.deserialize(stream)
             items.append(data)
         return items
@@ -245,7 +221,8 @@ class ListField(Field):
         return len(self.value)
 
 class IPv4AddressField(Field):
-    """An IPv4 address field without timestamp and reserved IPv6 space."""
+    """An IPv4 address field without timestamp and reserved IPv6 space.
+    """
     reserved = b"\x00"*10 + b"\xff"*2
 
     def parse(self, value):
@@ -263,7 +240,8 @@ class IPv4AddressField(Field):
         return bin_data.getvalue()
 
 class VariableIntegerField(Field):
-    """A variable size integer field."""
+    """A variable size integer field.
+    """
     def parse(self, value):
         self.value = int(value)
 
@@ -291,8 +269,8 @@ class VariableIntegerField(Field):
         return b'\xFF' + struct.pack("<Q", self.value)
 
 class VariableStringField(Field):
-    """A variable length string field."""
-
+    """A variable length string field.
+    """
     def __init__(self):
         super().__init__()
         self.var_int = VariableIntegerField()
@@ -316,7 +294,8 @@ class VariableStringField(Field):
         return len(self.value)
 
 class Hash(Field):
-    """A hash type field."""
+    """A hash type field.
+    """
     datatype = "<I"
 
     def parse(self, value):
@@ -334,23 +313,25 @@ class Hash(Field):
     def serialize(self):
         hash_ = self.value
         bin_data = BytesIO()
-        for i in range(8):
+        for _ in range(8):
             pack_data = struct.pack(self.datatype, hash_ & 0xFFFFFFFF)
             bin_data.write(pack_data)
             hash_ >>= 32
         return bin_data.getvalue()
 
 class BlockLocator(Field):
-    """A block locator type used for getblocks and getheaders"""
+    # pylint: disable=abstract-method
+    """A block locator type used for getblocks and getheaders.
+    """
     datatype = "<I"
 
-    def parse(self, values):
-        self.values = values
+    def parse(self, value):
+        self.values = value
 
     def serialize(self):
         bin_data = BytesIO()
         for hash_ in self.values:
-            for i in range(8):
+            for _ in range(8):
                 pack_data = struct.pack(self.datatype, hash_ & 0xFFFFFFFF)
                 bin_data.write(pack_data)
                 hash_ >>= 32

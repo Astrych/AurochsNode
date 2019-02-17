@@ -1,8 +1,11 @@
-# The Base58 digits
-base58_digits = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+"""Utility module.
+"""
 
-from . import fields
+from . import params
 
+
+# The Base58 digits.
+BASE58_DIGITS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 def base58_encode(address_bignum):
     """This function converts an address in bignum formatting
@@ -15,7 +18,7 @@ def base58_encode(address_bignum):
     basedigits = []
     while address_bignum > 0:
         address_bignum, rem = divmod(address_bignum, 58)
-        basedigits.insert(0, base58_digits[rem])
+        basedigits.insert(0, BASE58_DIGITS[rem])
     return ''.join(basedigits)
 
 def base58_decode(address):
@@ -28,24 +31,25 @@ def base58_decode(address):
     address_bignum = 0
     for char in address:
         address_bignum *= 58
-        digit = base58_digits.index(char)
+        digit = BASE58_DIGITS.index(char)
         address_bignum += digit
     return address_bignum
 
 def services_to_text(services):
     """Converts the services field into a textual
-    representation."""
+    representation.
+    """
     service_strings = []
     named_services = []
-    # convert every service we have a name for that this endpoint offers
-    for service_name, flag_mask in fields.SERVICES.items():
+    # Converts every service we have a name for that this endpoint offers.
+    for service_name, flag_mask in params.SERVICES.items():
         if services & flag_mask:
             service_strings.append(service_name)
             named_services.append(flag_mask)
 
-    # for those services that don't have a name, show them anyway
+    # For those services that don't have a name, show them anyway.
     for service_mask_shift in range(32):
         service_mask = 1 << service_mask_shift
         if (not service_mask in named_services) and (services & service_mask):
-            service_strings.append("NODE_UNKNOWN_%d" % (service_mask_shift))
+            service_strings.append(f"NODE_UNKNOWN_{service_mask_shift}")
     return service_strings

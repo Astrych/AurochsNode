@@ -1,7 +1,10 @@
-import binascii
-import hashlib
+"""Module with methods for handling creation
+of private and public keys.
+"""
 
+import hashlib
 import ecdsa
+
 from . import utils
 
 
@@ -23,7 +26,7 @@ class NetworkPublicKey:
         )
 
     @classmethod
-    def from_private_key(klass, private_key):
+    def from_private_key(cls, private_key):
         """This class method will create a new Public Key
         based on a private key.
 
@@ -31,8 +34,8 @@ class NetworkPublicKey:
         :returns: a new public key
         """
         public_key = private_key.get_verifying_key()
-        hexkey = (klass.key_prefix + public_key.to_string()).encode("hex")
-        return klass(hexkey)
+        hexkey = (cls.key_prefix + public_key.to_string()).encode("hex")
+        return cls(hexkey)
 
     def to_string(self):
         """This method will convert the public key to
@@ -59,7 +62,7 @@ class NetworkPublicKey:
         """
         pubkeystr = self.to_string()
         sha256digest = hashlib.sha256(pubkeystr).digest()
-        ripemd160 = hashlib.new('ripemd160')
+        ripemd160 = hashlib.new("ripemd160")
         ripemd160.update(sha256digest)
         ripemd160_digest = ripemd160.digest()
 
@@ -73,12 +76,12 @@ class NetworkPublicKey:
 
         # Append checksum
         address = ripemd160_digest + checksum
-        address_bignum = int('0x' + address.encode('hex'), 16)
+        address_bignum = int("0x" + address.encode("hex"), 16)
         base58 = utils.base58_encode(address_bignum)
         return '1' + base58
 
     def __repr__(self):
-        return "<NetworknPublicKey address=[%s]>" % self.to_address()
+        return f"<NetworknPublicKey address=[{self.to_address()}]>"
 
 class NetworkPrivateKey:
     """This is a representation for a network private keys. In this
@@ -102,15 +105,12 @@ class NetworkPrivateKey:
     def __init__(self, hexkey=None, entropy=None):
         if hexkey:
             stringkey = hexkey.decode("hex")
-            self.private_key = \
-                ecdsa.SigningKey.from_string(stringkey, curve=ecdsa.SECP256k1)
+            self.private_key = ecdsa.SigningKey.from_string(stringkey, curve=ecdsa.SECP256k1)
         else:
-            self.private_key = \
-                ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1,
-                    entropy=entropy)
+            self.private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1, entropy=entropy)
 
     @classmethod
-    def from_string(klass, stringkey):
+    def from_string(cls, stringkey):
         """This method will create a new Private Key using
         the specified string data.
 
@@ -118,10 +118,10 @@ class NetworkPrivateKey:
         :returns: A new Private Key
         """
         hexvalue = stringkey.encode("hex")
-        return klass(hexvalue)
+        return cls(hexvalue)
 
     @classmethod
-    def from_wif(klass, wifkey):
+    def from_wif(cls, wifkey):
         """This method will create a new Private Key from a
         WIF format string.
 
@@ -136,10 +136,10 @@ class NetworkPrivateKey:
         shafirst = hashlib.sha256(key).digest()
         shasecond = hashlib.sha256(shafirst).digest()
 
-        if shasecond[:4]!=checksum:
+        if shasecond[:4] != checksum:
             raise RuntimeError("Invalid checksum for the address.")
 
-        return klass(key[1:].encode("hex"))
+        return cls(key[1:].encode("hex"))
 
     def to_hex(self):
         """This method will convert the Private Key to
@@ -179,7 +179,7 @@ class NetworkPrivateKey:
 
         :returns: A new Public Key
         """
-        hexkey = self.to_hex().upper()
+        # hexkey = self.to_hex().upper()
         return NetworkPublicKey.from_private_key(self.private_key)
 
     def __repr__(self):
