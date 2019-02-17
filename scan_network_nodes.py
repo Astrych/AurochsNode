@@ -3,15 +3,16 @@ their peers. After that it uses these peers to repeat the process.
 That way it builds list of all recently seen peers in the network.
 """
 
-from asyncio import get_event_loop, ensure_future, gather
 import json
+from asyncio import get_event_loop, ensure_future, gather
+from typing import Dict
 
 from pinkcoin.node import Node
 from pinkcoin.serializers import GetAddr
 from pinkcoin.params import HARDCODED_NODES
 
 
-NODES = {}
+NODES: Dict = {}
 
 class PinkcoinNode(Node):
     """Specific node implementation handling
