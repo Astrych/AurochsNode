@@ -1,6 +1,5 @@
-"""Program connect to list of initial nodes and asks them for
-their peers. After that it uses these peers to repeat the process.
-That way it builds list of all recently seen peers in the network.
+"""Program connects to a peer and wait for alert message.
+After receiving it payload is deserialized and printed.
 """
 
 from asyncio import get_event_loop, ensure_future, gather
