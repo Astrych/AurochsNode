@@ -1,4 +1,5 @@
-"""Serializer module handling protocol messages
+"""
+Serializer module handling protocol messages
 serialization and deserialization.
 """
 
@@ -16,7 +17,8 @@ from . import utils
 
 # pylint: disable=E1101
 class SerializerMeta(type):
-    """The serializer meta class. This class will create an attribute
+    """
+    The serializer meta class. This class will create an attribute
     called '_fields' in each serializer with the ordered dict of
     fields present on the subclasses.
     """
@@ -26,7 +28,8 @@ class SerializerMeta(type):
 
     @classmethod
     def get_fields(cls, bases, attrs, field_class):
-        """This method will construct an ordered dict with all
+        """
+        This method will construct an ordered dict with all
         the fields present on the serializer classes.
         """
         fields = [
@@ -43,11 +46,13 @@ class SerializerMeta(type):
         return OrderedDict(fields)
 
 class SerializerABC(metaclass=SerializerMeta):
-    """The serializer abstract base class.
+    """
+    The serializer abstract base class.
     """
 
 class Serializer(SerializerABC):
-    """The main serializer class, inherit from this class to
+    """
+    The main serializer class, inherit from this class to
     create custom serializers.
 
     Example of use::
@@ -56,7 +61,8 @@ class Serializer(SerializerABC):
             model_class = VerAck
     """
     def serialize(self, obj, fields=None):
-        """This method will receive an object and then will serialize
+        """
+        This method will receive an object and then will serialize
         it according to the fields declared on the serializer.
 
         :param obj: The object to serializer.
@@ -73,7 +79,8 @@ class Serializer(SerializerABC):
         return bin_data.getvalue()
 
     def deserialize(self, stream):
-        """This method will read the stream and then will deserialize the
+        """
+        This method will read the stream and then will deserialize the
         binary data information present on it.
 
         :param stream: A file-like object (BytesIO, file, socket, etc.)
@@ -85,7 +92,8 @@ class Serializer(SerializerABC):
         return model
 
 class SerializableMessage:
-    """Represents message serialized to object.
+    """
+    Represents message serialized to object.
     """
     def get_message(self, network_type="main"):
         """Get the binary version of this message, complete with header."""
@@ -103,7 +111,8 @@ class SerializableMessage:
         return bin_header + bin_message
 
 class MessageHeader:
-    """The header of all network messages.
+    """
+    The header of all network messages.
     """
     def __init__(self, network_type="main"):
         self.magic = params.MAGIC_VALUES[network_type]
@@ -112,7 +121,8 @@ class MessageHeader:
         self.checksum = 0
 
     def _magic_to_text(self):
-        """Converts the magic value to a textual representation.
+        """
+        Converts the magic value to a textual representation.
         """
         for key, value in params.MAGIC_VALUES.items():
             if value == self.magic:
@@ -126,7 +136,8 @@ class MessageHeader:
         )
 
 class MessageHeaderSerializer(Serializer):
-    """Serializer for the MessageHeader.
+    """
+    Serializer for the MessageHeader.
     """
     model_class = MessageHeader
 
@@ -137,13 +148,15 @@ class MessageHeaderSerializer(Serializer):
 
     @staticmethod
     def calcsize():
-        """Calculates header size.
+        """
+        Calculates header size.
         """
         return struct.calcsize("i12sii")
 
     @staticmethod
     def calc_checksum(payload):
-        """Calculate the checksum of the specified payload.
+        """
+        Calculate the checksum of the specified payload.
 
         :param payload: The binary data payload.
         """
@@ -153,7 +166,8 @@ class MessageHeaderSerializer(Serializer):
         return struct.unpack("<I", checksum)[0]
 
 class IPv4Address:
-    """The IPv4 Address (without timestamp).
+    """
+    The IPv4 Address (without timestamp).
     """
     def __init__(self):
         self.services = params.SERVICES["NODE_NETWORK"]
@@ -169,7 +183,8 @@ class IPv4Address:
         )
 
 class IPv4AddressSerializer(Serializer):
-    """Serializer for the IPv4Address.
+    """
+    Serializer for the IPv4Address.
     """
     model_class = IPv4Address
 
@@ -178,7 +193,8 @@ class IPv4AddressSerializer(Serializer):
     port = data_fields.UInt16BEField()
 
 class IPv4AddressTimestamp(IPv4Address):
-    """The IPv4 Address with timestamp.
+    """
+    The IPv4 Address with timestamp.
     """
     def __init__(self):
         super().__init__()
@@ -194,7 +210,8 @@ class IPv4AddressTimestamp(IPv4Address):
         )
 
 class IPv4AddressTimestampSerializer(Serializer):
-    """Serializer for the IPv4AddressTimestamp.
+    """
+    Serializer for the IPv4AddressTimestamp.
     """
     model_class = IPv4AddressTimestamp
 
@@ -204,7 +221,8 @@ class IPv4AddressTimestampSerializer(Serializer):
     port = data_fields.UInt16BEField()
 
 class Version(SerializableMessage):
-    """The version command.
+    """
+    The version command.
     """
     command = "version"
 
@@ -219,7 +237,8 @@ class Version(SerializableMessage):
         self.start_height = 0
 
 class VersionSerializer(Serializer):
-    """The version command serializer.
+    """
+    The version command serializer.
     """
     model_class = Version
 
@@ -233,17 +252,20 @@ class VersionSerializer(Serializer):
     start_height = data_fields.Int32LEField()
 
 class VerAck(SerializableMessage):
-    """The version acknowledge (verack) command.
+    """
+    The version acknowledge (verack) command.
     """
     command = "verack"
 
 class VerAckSerializer(Serializer):
-    """The serializer for the verack command.
+    """
+    The serializer for the verack command.
     """
     model_class = VerAck
 
 class Ping(SerializableMessage):
-    """The ping command, which should always be
+    """
+    The ping command, which should always be
     answered with a Pong.
     """
     command = "ping"
@@ -252,17 +274,19 @@ class Ping(SerializableMessage):
         self.nonce = random.randint(0, 2**32-1)
 
     def __repr__(self):
-        return "<{} Nonce=[{}]>".format(self.__class__.__name__, self.nonce)
+        return f"<{self.__class__.__name__} Nonce=[{self.nonce}]>"
 
 class PingSerializer(Serializer):
-    """The ping command serializer.
+    """
+    The ping command serializer.
     """
     model_class = Ping
 
     nonce = data_fields.UInt64LEField()
 
 class Pong(SerializableMessage):
-    """The pong command, usually returned when
+    """
+    The pong command, usually returned when
     a ping command arrives.
     """
     command = "pong"
@@ -271,119 +295,57 @@ class Pong(SerializableMessage):
         self.nonce = random.randint(0, 2**32-1)
 
     def __repr__(self):
-        return "<%s Nonce=[%d]>" % (
-            self.__class__.__name__,
-            self.nonce,
-        )
+        return f"<{self.__class__.__name__} Nonce=[{self.nonce}]>"
 
 class PongSerializer(Serializer):
-    """The pong command serializer.
+    """
+    The pong command serializer.
     """
     model_class = Pong
 
     nonce = data_fields.UInt64LEField()
 
 class CancelAlert(SerializableMessage):
-    """The cancel alert field.
+    """
+    The cancel alert field.
     """
     def __init__(self):
         self.cancel = 0
 
 class CancelAlertSerializer(Serializer):
-    """The cancel alert serializer.
+    """
+    The cancel alert serializer.
     """
     model_class = CancelAlert
 
     cancel = data_fields.Int32LEField()
 
 class SubVerAlert(SerializableMessage):
-    """The SubVer alert field.
+    """
+    The SubVer alert field.
     """
     def __init__(self):
         self.sub_ver = 0
 
 class SubVerAlertSerializer(Serializer):
-    """The SubVer alert serializer.
+    """
+    The SubVer alert serializer.
     """
     model_class = SubVerAlert
 
     sub_ver = data_fields.VariableStringField()
 
-class AlertPayload(SerializableMessage):
-    """The alert payload message.
-    """
-    def __init__(self):
-        self.version = 0
-        self.relay_until = 0
-        self.expiration = 0
-        self.alert_id = 0
-        self.cancel = 0
-        self.set_cancel = []
-        self.min_ver = 0
-        self.max_ver = 0
-        self.set_sub_ver = []
-        self.priority = 0
-        self.comment = ""
-        self.status_bar = ""
-        self.reserved = ""
-
-    def __repr__(self):
-        return "<{} Message=[{}]>".format(
-            self.__class__.__name__,
-            self.status_bar,
-        )
-
-class AlertPayloadSerializer(Serializer):
-    """The alert payload serializer.
-    """
-    model_class = AlertPayload
-
-    version = data_fields.Int32LEField()
-    relay_until = data_fields.Int64LEField()
-    expiration = data_fields.Int64LEField()
-    alert_id = data_fields.Int32LEField()
-    cancel = data_fields.Int32LEField()
-    set_cancel = data_fields.ListField(CancelAlertSerializer)
-    min_ver = data_fields.Int32LEField()
-    max_ver = data_fields.Int32LEField()
-    set_sub_ver = data_fields.ListField(SubVerAlertSerializer)
-    priority = data_fields.Int32LEField()
-    comment = data_fields.VariableStringField()
-    status_bar = data_fields.VariableStringField()
-    reserved = data_fields.VariableStringField()
-
-class Alert(SerializableMessage):
-    """The alert command.
-    """
-    command = "alert"
-
-    def __init__(self):
-        self.payload = ""
-        self.signature = ""
-
-    def __repr__(self):
-        return "<{} Payload=[{}], Signature=[{}]>".format(
-            self.__class__.__name__,
-            self.payload, self.signature,
-        )
-
-class AlertSerializer(Serializer):
-    """The alert command serializer.
-    """
-    model_class = Alert
-
-    payload = data_fields.VariableStringField()
-    signature = data_fields.VariableStringField()
-
 class Inventory(SerializableMessage):
-    """The Inventory representation.
+    """
+    The Inventory representation.
     """
     def __init__(self):
         self.inv_type = params.INVENTORY_TYPE["MSG_TX"]
         self.inv_hash = 0
 
     def type_to_text(self):
-        """Converts the inventory type to text representation.
+        """
+        Converts the inventory type to text representation.
         """
         for key, value in params.INVENTORY_TYPE.items():
             if value == self.inv_type:
@@ -396,7 +358,8 @@ class Inventory(SerializableMessage):
         )
 
 class InventorySerializer(Serializer):
-    """The serializer for the Inventory.
+    """
+    The serializer for the Inventory.
     """
     model_class = Inventory
 
@@ -404,7 +367,8 @@ class InventorySerializer(Serializer):
     inv_hash = data_fields.Hash()
 
 class InventoryVector(SerializableMessage):
-    """A vector of inventories.
+    """
+    A vector of inventories.
     """
     command = "inv"
 
@@ -412,7 +376,7 @@ class InventoryVector(SerializableMessage):
         self.inventory = []
 
     def __repr__(self):
-        return "<{} Count=[{}]>".format(self.__class__.__name__, len(self))
+        return f"<{self.__class__.__name__} Count=[{len(self)}]>"
 
     def __len__(self):
         return len(self.inventory)
@@ -421,13 +385,15 @@ class InventoryVector(SerializableMessage):
         return iter(self.inventory)
 
 class InventoryVectorSerializer(Serializer):
-    """The serializer for the vector of inventories.
+    """
+    The serializer for the vector of inventories.
     """
     model_class = InventoryVector
     inventory = data_fields.ListField(InventorySerializer)
 
 class AddressVector(SerializableMessage):
-    """A vector of addresses.
+    """
+    A vector of addresses.
     """
     command = "addr"
 
@@ -435,7 +401,7 @@ class AddressVector(SerializableMessage):
         self.addresses = []
 
     def __repr__(self):
-        return "<{} Count=[{}]>".format(self.__class__.__name__, len(self))
+        return f"<{self.__class__.__name__} Count=[{len(self)}]>"
 
     def __len__(self):
         return len(self.addresses)
@@ -444,35 +410,41 @@ class AddressVector(SerializableMessage):
         return iter(self.addresses)
 
 class AddressVectorSerializer(Serializer):
-    """Serializer for the addresses vector.
+    """
+    Serializer for the addresses vector.
     """
     model_class = AddressVector
     addresses = data_fields.ListField(IPv4AddressTimestampSerializer)
 
 class GetData(InventoryVector):
-    """GetData message command.
+    """
+    GetData message command.
     """
     command = "getdata"
 
 class GetDataSerializer(Serializer):
-    """Serializer for the GetData command.
+    """
+    Serializer for the GetData command.
     """
     model_class = GetData
     inventory = data_fields.ListField(InventorySerializer)
 
 class NotFound(GetData):
-    """NotFound command message.
+    """
+    NotFound command message.
     """
     command = "notfound"
 
 class NotFoundSerializer(Serializer):
-    """Serializer for the NotFound message.
+    """
+    Serializer for the NotFound message.
     """
     model_class = NotFound
     inventory = data_fields.ListField(InventorySerializer)
 
 class OutPoint:
-    """The OutPoint representation.
+    """
+    The OutPoint representation.
     """
     def __init__(self):
         self.out_hash = 0
@@ -484,14 +456,16 @@ class OutPoint:
         )
 
 class OutPointSerializer(Serializer):
-    """The OutPoint representation serializer.
+    """
+    The OutPoint representation serializer.
     """
     model_class = OutPoint
     out_hash = data_fields.Hash()
     index = data_fields.UInt32LEField()
 
 class TxIn:
-    """The transaction input representation.
+    """
+    The transaction input representation.
     """
     def __init__(self):
         self.previous_output = None
@@ -501,10 +475,11 @@ class TxIn:
         self.sequence = 4294967295
 
     def __repr__(self):
-        return "<{} Sequence=[{}]>".format(self.__class__.__name__, self.sequence)
+        return f"<{self.__class__.__name__} Sequence=[{self.sequence}]>"
 
 class TxInSerializer(Serializer):
-    """The transaction input serializer.
+    """
+    The transaction input serializer.
     """
     model_class = TxIn
     previous_output = data_fields.NestedField(OutPointSerializer)
@@ -512,14 +487,16 @@ class TxInSerializer(Serializer):
     sequence = data_fields.UInt32LEField()
 
 class TxOut:
-    """The transaction output.
+    """
+    The transaction output.
     """
     def __init__(self):
         self.value = 0
         self.pk_script = "Empty"
 
     def get_pink_value(self):
-        """Returns coins value in PINK.
+        """
+        Returns coins value in PINK.
         """
         return self.value//100000000 + self.value%100000000/100000000.0
 
@@ -527,14 +504,16 @@ class TxOut:
         return "<{} Value=[{:.8f}]>".format(self.__class__.__name__, self.get_pink_value())
 
 class TxOutSerializer(Serializer):
-    """The transaction output serializer.
+    """
+    The transaction output serializer.
     """
     model_class = TxOut
     value = data_fields.Int64LEField()
     pk_script = data_fields.VariableStringField()
 
 class Tx(SerializableMessage):
-    """The main transaction representation, this object will
+    """
+    The main transaction representation, this object will
     contain all the inputs and outputs of the transaction.
     """
     command = "tx"
@@ -546,19 +525,21 @@ class Tx(SerializableMessage):
         self.lock_time = 0
 
     def _locktime_to_text(self):
-        """Converts the lock-time to textual representation.
+        """
+        Converts the lock-time to textual representation.
         """
         text = "Unknown"
         if self.lock_time == 0:
             text = "Always Locked"
         elif self.lock_time < 500000000:
-            text = "Block %d" % self.lock_time
+            text = f"Block {self.lock_time}"
         elif self.lock_time >= 500000000:
             text = time.ctime(self.lock_time)
         return text
 
     def calculate_hash(self):
-        """This method will calculate the hash of the transaction.
+        """
+        This method will calculate the hash of the transaction.
         """
         hash_fields = ["version", "tx_in", "tx_out", "lock_time"]
         serializer = TxSerializer()
@@ -574,7 +555,8 @@ class Tx(SerializableMessage):
         )
 
 class TxSerializer(Serializer):
-    """The transaction serializer.
+    """
+    The transaction serializer.
     """
     model_class = Tx
     version = data_fields.UInt32LEField()
@@ -583,7 +565,8 @@ class TxSerializer(Serializer):
     lock_time = data_fields.UInt32LEField()
 
 class BlockHeader(SerializableMessage):
-    """The header of the block.
+    """
+    The header of the block.
     """
     def __init__(self):
         self.version = 0
@@ -596,7 +579,8 @@ class BlockHeader(SerializableMessage):
         self.sig = 0
 
     def calculate_hash(self):
-        """This method will calculate the hash of the block.
+        """
+        This method will calculate the hash of the block.
         """
         hash_fields = [
             "version", "prev_block", "merkle_root",
@@ -617,7 +601,8 @@ class BlockHeader(SerializableMessage):
         )
 
 class BlockHeaderSerializer(Serializer):
-    """The serializer for the block header.
+    """
+    The serializer for the block header.
     """
     model_class = BlockHeader
     version = data_fields.UInt32LEField()
@@ -630,7 +615,8 @@ class BlockHeaderSerializer(Serializer):
     sig = data_fields.VariableIntegerField()
 
 class Block(BlockHeader):
-    """The block message. This message contains all the transactions
+    """
+    The block message. This message contains all the transactions
     present in the block.
     """
     command = "block"
@@ -659,7 +645,8 @@ class Block(BlockHeader):
         )
 
 class BlockSerializer(Serializer):
-    """The deserializer for the blocks.
+    """
+    The deserializer for the blocks.
     """
     model_class = Block
     version = data_fields.UInt32LEField()
@@ -672,7 +659,8 @@ class BlockSerializer(Serializer):
     vch_block_sig = data_fields.VariableStringField()
 
 class HeaderVector(SerializableMessage):
-    """The header only vector.
+    """
+    The header only vector.
     """
     command = "headers"
 
@@ -680,7 +668,7 @@ class HeaderVector(SerializableMessage):
         self.headers = []
 
     def __repr__(self):
-        return "<{} Count=[{}]>".format(self.__class__.__name__, len(self))
+        return f"<{self.__class__.__name__} Count=[{len(self)}]>"
 
     def __len__(self):
         return len(self.headers)
@@ -689,33 +677,39 @@ class HeaderVector(SerializableMessage):
         return iter(self.headers)
 
 class HeaderVectorSerializer(Serializer):
-    """Serializer for the block header vector.
+    """
+    Serializer for the block header vector.
     """
     model_class = HeaderVector
     headers = data_fields.ListField(BlockHeaderSerializer)
 
 class MemPool(SerializableMessage):
-    """The mempool command.
+    """
+    The mempool command.
     """
     command = "mempool"
 
 class MemPoolSerializer(Serializer):
-    """The serializer for the mempool command.
+    """
+    The serializer for the mempool command.
     """
     model_class = MemPool
 
 class GetAddr(SerializableMessage):
-    """The getaddr command.
+    """
+    The getaddr command.
     """
     command = "getaddr"
 
 class GetAddrSerializer(Serializer):
-    """The serializer for the getaddr command.
+    """
+    The serializer for the getaddr command.
     """
     model_class = GetAddr
 
 class GetBlocks(SerializableMessage):
-    """The getblocks command.
+    """
+    The getblocks command.
     """
     command = "getblocks"
 
@@ -726,7 +720,8 @@ class GetBlocks(SerializableMessage):
         self.block_hashes = hashes
 
 class GetBlocksSerializer(Serializer):
-    """Serializer for getblocks message.
+    """
+    Serializer for getblocks message.
     """
     model_class = GetBlocks
     version = data_fields.UInt32LEField()
@@ -735,7 +730,8 @@ class GetBlocksSerializer(Serializer):
     hash_stop = data_fields.Hash()
 
 class GetHeaders(SerializableMessage):
-    """The getheaders command.
+    """
+    The getheaders command.
     """
     command = "getheaders"
 
@@ -746,13 +742,81 @@ class GetHeaders(SerializableMessage):
         self.block_hashes = hashes
 
 class GetHeadersSerializer(Serializer):
-    """Serializer for getheaders message.
+    """
+    Serializer for getheaders message.
     """
     model_class = GetHeaders
     version = data_fields.UInt32LEField()
     hash_count = data_fields.VariableIntegerField()
     block_hashes = data_fields.BlockLocator()
     hash_stop = data_fields.Hash()
+
+
+class AlertPayload(SerializableMessage):
+    """
+    The alert payload message.
+    """
+    def __init__(self):
+        self.version = 0
+        self.relay_until = 0
+        self.expiration = 0
+        self.alert_id = 0
+        self.cancel = 0
+        self.set_cancel = []
+        self.min_ver = 0
+        self.max_ver = 0
+        self.set_sub_ver = []
+        self.priority = 0
+        self.comment = ""
+        self.status_bar = ""
+        self.reserved = ""
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} Message=[{self.status_bar}]>"
+
+class AlertPayloadSerializer(Serializer):
+    """
+    The alert payload serializer.
+    """
+    model_class = AlertPayload
+
+    version = data_fields.Int32LEField()
+    relay_until = data_fields.Int64LEField()
+    expiration = data_fields.Int64LEField()
+    alert_id = data_fields.Int32LEField()
+    cancel = data_fields.Int32LEField()
+    set_cancel = data_fields.ListField(CancelAlertSerializer)
+    min_ver = data_fields.Int32LEField()
+    max_ver = data_fields.Int32LEField()
+    set_sub_ver = data_fields.ListField(SubVerAlertSerializer)
+    priority = data_fields.Int32LEField()
+    comment = data_fields.VariableStringField()
+    status_bar = data_fields.VariableStringField()
+    reserved = data_fields.VariableStringField()
+
+class Alert(SerializableMessage):
+    """
+    The alert command.
+    """
+    command = "alert"
+
+    def __init__(self):
+        self.payload = ""
+        self.signature = ""
+
+    def __repr__(self):
+        return "<{} Payload=[{}], Signature=[{}]>".format(
+            self.__class__.__name__, self.payload, self.signature,
+        )
+
+class AlertSerializer(Serializer):
+    """
+    The alert command serializer.
+    """
+    model_class = Alert
+
+    payload = data_fields.VariableStringField()
+    signature = data_fields.VariableStringField()
 
 
 MESSAGE_MAPPING = {

@@ -1,4 +1,5 @@
-"""Module with various network parameters.
+"""
+Module with various network parameters.
 """
 
 

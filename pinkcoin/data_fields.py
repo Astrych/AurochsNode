@@ -1,4 +1,5 @@
-"""Module with serializable fields
+"""
+Module with serializable fields
 used by serializators/deserializators
 """
 
@@ -9,7 +10,8 @@ import socket
 
 # pylint: disable=E1101
 class Field:
-    """Base class for the Fields. This class only implements
+    """
+    Base class for the Fields. This class only implements
     the counter to keep the order of the fields on the
     serializer classes.
     """
@@ -20,7 +22,8 @@ class Field:
         Field.counter += 1
 
     def parse(self, value):
-        """This method should be implemented to parse the value
+        """
+        This method should be implemented to parse the value
         parameter into the field internal representation.
 
         :param value: value to be parsed
@@ -28,7 +31,8 @@ class Field:
         raise NotImplementedError
 
     def deserialize(self, stream):
-        """This method must read the stream data and then
+        """
+        This method must read the stream data and then
         deserialize and return the deserialized content.
 
         :returns: the deserialized content
@@ -37,7 +41,8 @@ class Field:
         raise NotImplementedError
 
     def serialize(self):
-        """Serialize the internal representation and return
+        """
+        Serialize the internal representation and return
         the serialized data.
 
         :returns: the serialized data
@@ -54,7 +59,8 @@ class Field:
         return str(self.value)
 
 class PrimaryField(Field):
-    """This is a base class for all fields that has only
+    """
+    This is a base class for all fields that has only
     one value and their value can be represented by
     a Python struct datatype.
 
@@ -65,7 +71,8 @@ class PrimaryField(Field):
     """
 
     def parse(self, value):
-        """This method will set the internal value to the
+        """
+        This method will set the internal value to the
         specified value.
 
         :param value: the value to be set
@@ -73,7 +80,8 @@ class PrimaryField(Field):
         self.value = value
 
     def deserialize(self, stream):
-        """Deserialize the stream using the struct data type
+        """
+        Deserialize the stream using the struct data type
         specified.
 
         :param stream: the data stream
@@ -83,48 +91,57 @@ class PrimaryField(Field):
         return struct.unpack(self.datatype, data)[0]
 
     def serialize(self):
-        """Serialize the internal data and then return the
+        """
+        Serialize the internal data and then return the
         serialized data."""
         data = struct.pack(self.datatype, self.value)
         return data
 
 class Int32LEField(PrimaryField):
-    """32-bit little-endian integer field.
+    """
+    32-bit little-endian integer field.
     """
     datatype = "<i"
 
 class UInt32LEField(PrimaryField):
-    """32-bit little-endian unsigned integer field.
+    """
+    32-bit little-endian unsigned integer field.
     """
     datatype = "<I"
 
 class Int64LEField(PrimaryField):
-    """64-bit little-endian integer field.
+    """
+    64-bit little-endian integer field.
     """
     datatype = "<q"
 
 class UInt64LEField(PrimaryField):
-    """64-bit little-endian unsigned integer field.
+    """
+    64-bit little-endian unsigned integer field.
     """
     datatype = "<Q"
 
 class Int16LEField(PrimaryField):
-    """16-bit little-endian integer field.
+    """
+    16-bit little-endian integer field.
     """
     datatype = "<h"
 
 class UInt16LEField(PrimaryField):
-    """16-bit little-endian unsigned integer field.
+    """
+    16-bit little-endian unsigned integer field.
     """
     datatype = "<H"
 
 class UInt16BEField(PrimaryField):
-    """16-bit big-endian unsigned integer field.
+    """
+    16-bit big-endian unsigned integer field.
     """
     datatype = ">H"
 
 class FixedStringField(Field):
-    """A fixed length string field.
+    """
+    A fixed length string field.
 
     Example of use::
 
@@ -152,7 +169,8 @@ class FixedStringField(Field):
         return bin_data.getvalue()
 
 class NestedField(Field):
-    """A field used to nest another serializer.
+    """
+    A field used to nest another serializer.
 
     Example of use::
 
@@ -177,7 +195,8 @@ class NestedField(Field):
         return self.serializer.serialize(self.value)
 
 class ListField(Field):
-    """A field used to serialize/deserialize a list of serializers.
+    """
+    A field used to serialize/deserialize a list of serializers.
 
     Example of use::
 
@@ -221,7 +240,8 @@ class ListField(Field):
         return len(self.value)
 
 class IPv4AddressField(Field):
-    """An IPv4 address field without timestamp and reserved IPv6 space.
+    """
+    An IPv4 address field without timestamp and reserved IPv6 space.
     """
     reserved = b"\x00"*10 + b"\xff"*2
 
@@ -240,7 +260,8 @@ class IPv4AddressField(Field):
         return bin_data.getvalue()
 
 class VariableIntegerField(Field):
-    """A variable size integer field.
+    """
+    A variable size integer field.
     """
     def parse(self, value):
         self.value = int(value)
@@ -269,7 +290,8 @@ class VariableIntegerField(Field):
         return b'\xFF' + struct.pack("<Q", self.value)
 
 class VariableStringField(Field):
-    """A variable length string field.
+    """
+    A variable length string field.
     """
     def __init__(self):
         super().__init__()
@@ -294,7 +316,8 @@ class VariableStringField(Field):
         return len(self.value)
 
 class Hash(Field):
-    """A hash type field.
+    """
+    A hash type field.
     """
     datatype = "<I"
 
@@ -321,7 +344,8 @@ class Hash(Field):
 
 class BlockLocator(Field):
     # pylint: disable=abstract-method
-    """A block locator type used for getblocks and getheaders.
+    """
+    A block locator type used for getblocks and getheaders.
     """
     datatype = "<I"
 

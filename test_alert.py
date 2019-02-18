@@ -1,4 +1,5 @@
-"""Program connects to a peer and wait for alert message.
+"""
+Program connects to a peer and wait for alert message.
 After receiving it payload is deserialized and printed.
 """
 
@@ -10,7 +11,8 @@ from pinkcoin.serializers import AlertPayloadSerializer
 
 
 class PinkcoinNode(Node):
-    """Specific node implementation handling
+    """
+    Specific node implementation handling
     fetchng list of nodes peers.
     """
     async def handle_version(self, peer_name, message_header, message):
@@ -27,9 +29,10 @@ class PinkcoinNode(Node):
 
     async def handle_alert(self, peer_name, message_header, message):
         #pylint: disable=unused-argument
-        """Handles alert message.
         """
-        print(f"An alert was received from {peer_name}")
+        Handles alert message.
+        """
+        print("An alert was received from", peer_name)
         print("payload as uchar[]", message.payload)
         print("signature", message.signature)
 
@@ -67,4 +70,4 @@ if __name__ == "__main__":
         # KeyboardInterrupt is not properly handled on Windows
         # Issue will be resolved in Python 3.8
     finally:
-        print("================ End ================")
+        pass

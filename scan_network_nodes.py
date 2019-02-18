@@ -1,4 +1,5 @@
-"""Program connect to list of initial nodes and asks them for
+"""
+Program connects to list of hardcoded nodes and asks them for
 their peers. After that it uses these peers to repeat the process.
 That way it builds list of all recently seen peers in the network.
 """
@@ -15,7 +16,8 @@ from pinkcoin.params import HARDCODED_NODES
 NODES: Dict = {}
 
 class PinkcoinNode(Node):
-    """Specific node implementation handling
+    """
+    Specific node implementation handling
     fetchng list of nodes peers.
     """
     async def handle_version(self, peer_name, message_header, message):
@@ -52,7 +54,8 @@ class PinkcoinNode(Node):
 
     async def handle_addr(self, peer_name, message_header, message):
         #pylint: disable=unused-argument
-        """Handles Adrr message and store
+        """
+        Handles Adrr message and store
         peers data in a dictionary.
 
         :param peer_name: Peer name
@@ -89,7 +92,7 @@ if __name__ == "__main__":
         # KeyboardInterrupt is not properly handled on Windows
         # Issue will be resolved in Python 3.8
     finally:
-        print("================ End ================")
+        pass
 
     with open("network_nodes.json", "w+") as fp:
         json.dump(NODES, fp, sort_keys=True, indent=4)

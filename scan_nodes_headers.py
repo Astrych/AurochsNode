@@ -1,4 +1,5 @@
-"""Check hardcoded nodes headers data.
+"""
+Program checks hardcoded nodes headers data.
 """
 
 from asyncio import get_event_loop, ensure_future, gather
@@ -11,7 +12,8 @@ from pinkcoin.params import HARDCODED_NODES
 NODES = {}
 
 class PinkcoinNode(Node):
-    """Specific node implementation handling
+    """
+    Specific node implementation handling
     fetchng blockchain headers from nodes.
     """
     def __init__(self, ip, port):
@@ -32,32 +34,35 @@ class PinkcoinNode(Node):
 
     async def handle_verack(self, peer_name, message_header, message):
         #pylint: disable=unused-argument
-        """Handles Verack message.
         """
-        print("===============================")
+        Handles Verack message.
+        """
+        print("="*31)
         print("A verack message was received!")
-        print("===============================")
+        print("="*31)
         send = self.send_per_peer.get(peer_name)
         if not send:
-            genesis_block = 106807621267983349431936820025262069513739093724410944266789304831233161
+            genesis_block = 0x00000f79b700e6444665c4d090c9b8833664c4e2597c7087a6ba6391b956cc89
             print("Sending getheaders with genesis hash {}...".format(hex(genesis_block)))
             get_headers = GetHeaders([genesis_block])
             self.send_message(peer_name, get_headers)
             self.send_per_peer[peer_name] = True
-        print("===============================")
+        print("="*31)
 
     async def handle_inv(self, peer_name, message_header, message):
         #pylint: disable=unused-argument
-        """Handles Inv message.
         """
-        print("===============================")
+        Handles Inv message.
+        """
+        print("="*31)
         print("A inv message was received!")
-        print("===============================")
+        print("="*31)
         print(message.inventory)
 
     async def handle_headers(self, peer_name, message_header, message):
         #pylint: disable=unused-argument
-        """Handle Headers message.
+        """
+        Handles Headers message.
         """
         blocks_num = self.blocks_num_per_peer.get(peer_name, 0)
         if not blocks_num:
@@ -67,12 +72,12 @@ class PinkcoinNode(Node):
             last_hash = message.headers[-1].calculate_hash()
             last_timestamp = message.headers[-1].timestamp
             if blocks_num > 765500:
-                print("===============================")
+                print("="*31)
                 print("A headers message was received!")
-                print("===============================")
+                print("="*31)
                 print("LEN:", len(message.headers))
                 print("TOTAL:", blocks_num)
-                print("===============================")
+                print("="*31)
                 # TODO: Save headers somewhere.
                 print(f"Sending getheaders with hash {last_hash}")
                 print(f"Sending getheaders with timstamp {last_timestamp}")
@@ -93,4 +98,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        print("================ End ================")
+        pass

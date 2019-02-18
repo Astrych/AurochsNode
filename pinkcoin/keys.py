@@ -1,5 +1,6 @@
-"""Module with methods for handling creation
-of private and public keys.
+"""
+Module with methods for handling creation
+of private and public keys + verification of signed data.
 """
 
 import hashlib
@@ -11,7 +12,8 @@ from . import utils
 # TODO: Add handing of sig verification.
 
 class NetworkPublicKey:
-    """This is a representation for network public keys. In this
+    """
+    This is a representation for network public keys. In this
     class you'll find methods to import/export keys from multiple
     formats. Use a hex string representation to construct a new
     public key or use the clas methods to import from another format.
@@ -29,7 +31,8 @@ class NetworkPublicKey:
 
     @classmethod
     def from_private_key(cls, private_key):
-        """This class method will create a new Public Key
+        """
+        This class method will create a new Public Key
         based on a private key.
 
         :param private_key: The private key
@@ -40,7 +43,8 @@ class NetworkPublicKey:
         return cls(hexkey)
 
     def to_string(self):
-        """This method will convert the public key to
+        """
+        This method will convert the public key to
         a string representation.
 
         :returns: String representation of the public key
@@ -48,7 +52,8 @@ class NetworkPublicKey:
         return self.key_prefix + self.public_key.to_string()
 
     def to_hex(self):
-        """This method will convert the public key to
+        """
+        This method will convert the public key to
         a hex string representation.
 
         :returns: Hex string representation of the public key
@@ -57,7 +62,8 @@ class NetworkPublicKey:
         return self.key_prefix.encode("hex") + hexkey.upper()
 
     def to_address(self):
-        """This method will convert the public key to
+        """
+        This method will convert the public key to
         a proper network address.
 
         :returns: network address for the public key
@@ -86,7 +92,8 @@ class NetworkPublicKey:
         return f"<NetworknPublicKey address=[{self.to_address()}]>"
 
 class NetworkPrivateKey:
-    """This is a representation for a network private keys. In this
+    """
+    This is a representation for a network private keys. In this
     class you'll find methods to import/export keys from multiple
     formats. Use a hex string
     representation to construct a new Public Key or
@@ -113,7 +120,8 @@ class NetworkPrivateKey:
 
     @classmethod
     def from_string(cls, stringkey):
-        """This method will create a new Private Key using
+        """
+        This method will create a new Private Key using
         the specified string data.
 
         :param stringkey: The key in string format
@@ -124,14 +132,15 @@ class NetworkPrivateKey:
 
     @classmethod
     def from_wif(cls, wifkey):
-        """This method will create a new Private Key from a
+        """
+        This method will create a new Private Key from a
         WIF format string.
 
         :param wifkey: The private key in WIF format
         :returns: A new Private Key
         """
         value = utils.base58_decode(wifkey)
-        hexkey = "%x" % value
+        hexkey = "{:x}".format(value)
         checksum = hexkey[-4*2:].decode("hex")
         key = hexkey[:-4*2].decode("hex")
 
@@ -144,7 +153,8 @@ class NetworkPrivateKey:
         return cls(key[1:].encode("hex"))
 
     def to_hex(self):
-        """This method will convert the Private Key to
+        """
+        This method will convert the Private Key to
         a hex string representation.
 
         :returns: Hex string representation of the Private Key
@@ -153,7 +163,8 @@ class NetworkPrivateKey:
         return hexkey.upper()
 
     def to_string(self):
-        """This method will convert the Private Key to
+        """
+        This method will convert the Private Key to
         a string representation.
 
         :returns: String representation of the Private Key
@@ -161,7 +172,8 @@ class NetworkPrivateKey:
         return self.private_key.to_string()
 
     def to_wif(self):
-        """This method will export the Private Key to
+        """
+        This method will export the Private Key to
         WIF (Wallet Import Format).
 
         :returns:: The Private Key in WIF format.
@@ -176,7 +188,8 @@ class NetworkPrivateKey:
         return base58
 
     def generate_public_key(self):
-        """This method will create a new Public Key based on this
+        """
+        This method will create a new Public Key based on this
         Private Key.
 
         :returns: A new Public Key
@@ -185,4 +198,4 @@ class NetworkPrivateKey:
         return NetworkPublicKey.from_private_key(self.private_key)
 
     def __repr__(self):
-        return "<NetworkPrivateKey hexkey=[%s]>" % self.to_hex()
+        return f"<NetworkPrivateKey hexkey=[{self.to_hex()}]>"

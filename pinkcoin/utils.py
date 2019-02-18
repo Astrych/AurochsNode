@@ -1,4 +1,5 @@
-"""Utility module.
+"""
+Utility module.
 """
 
 from . import params
@@ -8,7 +9,8 @@ from . import params
 BASE58_DIGITS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 def base58_encode(address_bignum):
-    """This function converts an address in bignum formatting
+    """
+    This function converts an address in bignum formatting
     to a string in base58, it doesn't prepend the '1' prefix
     for the network address.
 
@@ -22,7 +24,8 @@ def base58_encode(address_bignum):
     return ''.join(basedigits)
 
 def base58_decode(address):
-    """This function converts an base58 string to a numeric
+    """
+    This function converts an base58 string to a numeric
     format.
 
     :param address: The base58 string
@@ -36,7 +39,8 @@ def base58_decode(address):
     return address_bignum
 
 def services_to_text(services):
-    """Converts the services field into a textual
+    """
+    Converts the services field into a textual
     representation.
     """
     service_strings = []
