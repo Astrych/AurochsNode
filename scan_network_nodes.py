@@ -8,14 +8,14 @@ import json
 from asyncio import get_event_loop, ensure_future, gather
 from typing import Dict
 
-from pinkcoin.node import Node
-from pinkcoin.serializers import GetAddr
-from pinkcoin.params import HARDCODED_NODES
+from pinkcoin.network.node import Node
+from pinkcoin.network.serializers import GetAddr
+from pinkcoin.network.params import HARDCODED_NODES
 
 
 NODES: Dict = {}
 
-class PinkcoinNode(Node):
+class TestAddrNode(Node):
     """
     Specific node implementation handling
     fetchng list of nodes peers.
@@ -81,7 +81,7 @@ class PinkcoinNode(Node):
 if __name__ == "__main__":
     LOOP = get_event_loop()
     try:
-        PINK_NODE = PinkcoinNode("0.0.0.0", "9134")
+        PINK_NODE = TestAddrNode("0.0.0.0", "9134")
         TASKS = [
             ensure_future(PINK_NODE.connect(v["ip"], v["port"])) for v in HARDCODED_NODES.values()
         ]

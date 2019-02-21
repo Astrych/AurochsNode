@@ -4,14 +4,14 @@ Program checks hardcoded nodes headers data.
 
 from asyncio import get_event_loop, ensure_future, gather
 
-from pinkcoin.node import Node
-from pinkcoin.serializers import GetHeaders
-from pinkcoin.params import HARDCODED_NODES
+from pinkcoin.network.node import Node
+from pinkcoin.network.serializers import GetHeaders
+from pinkcoin.network.params import HARDCODED_NODES
 
 
 NODES = {}
 
-class PinkcoinNode(Node):
+class TestHeadersNode(Node):
     """
     Specific node implementation handling
     fetchng blockchain headers from nodes.
@@ -90,7 +90,7 @@ class PinkcoinNode(Node):
 if __name__ == "__main__":
     LOOP = get_event_loop()
     try:
-        PINK_NODE = PinkcoinNode("0.0.0.0", "9134")
+        PINK_NODE = TestHeadersNode("0.0.0.0", "9134")
         WORK_TO_DO = [
             ensure_future(PINK_NODE.connect(v["ip"], v["port"])) for v in HARDCODED_NODES.values()
         ]

@@ -6,11 +6,11 @@ After receiving it payload is deserialized and printed.
 from asyncio import get_event_loop, ensure_future, gather
 from io import BytesIO
 
-from pinkcoin.node import Node
-from pinkcoin.serializers import AlertPayloadSerializer
+from pinkcoin.network.node import Node
+from pinkcoin.network.serializers import AlertPayloadSerializer
 
 
-class PinkcoinNode(Node):
+class TestAlertNode(Node):
     """
     Specific node implementation handling
     fetchng list of nodes peers.
@@ -36,7 +36,7 @@ class PinkcoinNode(Node):
         print("payload as uchar[]", message.payload)
         print("signature", message.signature)
 
-        # TODO: Check signature before deserialization.
+        # TODO: Check signature before alert payload deserialization.
         deserializer = AlertPayloadSerializer()
         alert = deserializer.deserialize(BytesIO(message.payload))
 
@@ -59,7 +59,7 @@ class PinkcoinNode(Node):
 if __name__ == "__main__":
     LOOP = get_event_loop()
     try:
-        PINK_NODE = PinkcoinNode("0.0.0.0", "9134")
+        PINK_NODE = TestAlertNode("0.0.0.0", "9134")
         TASKS = [
             ensure_future(PINK_NODE.connect("18.224.37.139", 9134))
         ]
