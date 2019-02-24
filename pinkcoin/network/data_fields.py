@@ -42,7 +42,7 @@ class Field:
 
     def serialize(self):
         """
-        Serialize the internal representation and return
+        Serializes the internal representation and return
         the serialized data.
 
         :returns: the serialized data
@@ -50,10 +50,7 @@ class Field:
         raise NotImplementedError
 
     def __repr__(self):
-        return "<%s [%r]>" % (
-            self.__class__.__name__,
-            repr(self.value)
-        )
+        return f"<{self.__class__.__name__} [{repr(self.value)}]>"
 
     def __str__(self):
         return str(self.value)
@@ -81,7 +78,7 @@ class PrimaryField(Field):
 
     def deserialize(self, stream):
         """
-        Deserialize the stream using the struct data type
+        Deserializes the stream using the struct data type
         specified.
 
         :param stream: the data stream
@@ -92,7 +89,7 @@ class PrimaryField(Field):
 
     def serialize(self):
         """
-        Serialize the internal data and then return the
+        Serializes the internal data and then return the
         serialized data."""
         data = struct.pack(self.datatype, self.value)
         return data

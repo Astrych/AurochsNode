@@ -5,7 +5,8 @@ Defines buffers handling protocol messages.
 import os
 from io import BytesIO
 
-from .serializers import MessageHeaderSerializer, MESSAGE_MAPPING
+from .base_serializer import MessageHeaderSerializer
+from .messages import MESSAGE_MAPPING
 from .exceptions import InvalidMessageChecksum
 
 

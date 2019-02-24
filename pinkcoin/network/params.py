@@ -43,3 +43,9 @@ HARDCODED_NODES = {
     "frankfurt.pinkarmy.ml": {"ip": "95.179.165.154", "port": 9134},
     "primary": {"ip": "159.203.20.96", "port": 9134},
 }
+
+# Time between pings automatically sent out for latency probing and keepalive (in seconds).
+PING_INTERVAL = 2*60
+
+# Time after which to disconnect, after waiting for a ping response (or inactivity).
+TIMEOUT_INTERVAL = 20*60

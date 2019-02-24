@@ -9,7 +9,7 @@ from asyncio import get_event_loop, ensure_future, gather
 from typing import Dict
 
 from pinkcoin.network.node import Node
-from pinkcoin.network.serializers import GetAddr
+from pinkcoin.network.core.serializers import GetAddr
 from pinkcoin.network.params import HARDCODED_NODES
 
 

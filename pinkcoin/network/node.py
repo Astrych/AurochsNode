@@ -5,7 +5,7 @@ Simple Pinkcoin p2p node implementation.
 from asyncio import open_connection, create_task, CancelledError
 
 from .buffer import ProtocolBuffer
-from .serializers import Version, VerAck, Pong
+from .core.serializers import Version, VerAck, Pong
 from .exceptions import NodeDisconnectException, InvalidMessageChecksum
 
 

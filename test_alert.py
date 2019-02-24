@@ -7,7 +7,7 @@ from asyncio import get_event_loop, ensure_future, gather
 from io import BytesIO
 
 from pinkcoin.network.node import Node
-from pinkcoin.network.serializers import AlertPayloadSerializer
+from pinkcoin.network.core.serializers import AlertPayloadSerializer
 
 
 class TestAlertNode(Node):

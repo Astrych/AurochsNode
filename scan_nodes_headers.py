@@ -5,7 +5,7 @@ Program checks hardcoded nodes headers data.
 from asyncio import get_event_loop, ensure_future, gather
 
 from pinkcoin.network.node import Node
-from pinkcoin.network.serializers import GetHeaders
+from pinkcoin.network.core.serializers import GetHeaders
 from pinkcoin.network.params import HARDCODED_NODES
 
 
