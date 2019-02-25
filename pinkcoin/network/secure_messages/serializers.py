@@ -1,28 +1,28 @@
 """
-Serializers for secure messages.
+Serializers for secure messages protocol.
 """
 
 from ..base_serializer import Serializer, SerializableMessage
-# from .. import data_fields
+from .. import data_fields
 
 
 class SecureMessagesInventory(SerializableMessage):
     """
-    The Secure Message Inventory representation.
+    The Secure Messages: Inventory representation.
     """
     def __init__(self):
         pass
 
 class SecureMessagesInventorySerializer(Serializer):
     """
-    The serializer for the Secure Message Inventory.
+    The serializer for the Secure Messages Inventory.
     """
     model_class = SecureMessagesInventory
 
 
 class SecureMessagesPing(SerializableMessage):
     """
-    The secure messages ping command, which should always be
+    The secure messages: ping command, should always be
     answered with a Pong.
     """
     command = "smsgPing"
@@ -32,13 +32,14 @@ class SecureMessagesPing(SerializableMessage):
 
 class SecureMessagesPingSerializer(Serializer):
     """
-    The secure messages ping command serializer.
+    The secure messages: ping command serializer.
     """
     model_class = SecureMessagesPing
 
+
 class SecureMessagesPong(SerializableMessage):
     """
-    The secure messages pong command, usually returned
+    The secure messages: pong command, usually returned
     when a ping command arrives.
     """
     command = "smsgPong"
@@ -48,6 +49,43 @@ class SecureMessagesPong(SerializableMessage):
 
 class SecureMessagePongSerializer(Serializer):
     """
-    The secure messages pong command serializer.
+    The secure messages: pong command serializer.
     """
     model_class = SecureMessagesPong
+
+
+class SecureMessagesDisabled(SerializableMessage):
+    """
+    The secure messages: disabled command.
+    """
+    command = "smsgDisabled"
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"
+
+class SecureMessageDisabledSerializer(Serializer):
+    """
+    The secure messages: disabled command serializer.
+    """
+    model_class = SecureMessagesDisabled
+
+
+class SecureMessagesIgnore(SerializableMessage):
+    """
+    The secure messages: ignore command.
+    """
+    command = "smsgIgnore"
+
+    def __init__(self):
+        self.ignore_until = 0
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}, ignore_until=[{self.ignore_until}]>"
+
+class SecureMessageIgnoreSerializer(Serializer):
+    """
+    The secure messages: ignore command serializer.
+    """
+    model_class = SecureMessagesIgnore
+
+    ignore_until = data_fields.VariableStringField()

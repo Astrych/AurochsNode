@@ -63,6 +63,9 @@ class ProtocolBuffer:
             msg = f"Bad checksum for command {message_header.command}"
             raise InvalidMessageChecksum(msg)
 
+        # TODO: Modify messages mapping / serializers to handle rejecting nodes with wrong
+        # size of received data (bio = io.BytesIO(); ...; bio.getbuffer().nbytes) even
+        # before message deserialization.
         if message_header.command in MESSAGE_MAPPING:
             deserializer = MESSAGE_MAPPING[message_header.command]()
             message_model = deserializer.deserialize(BytesIO(payload))

@@ -152,6 +152,8 @@ class PongSerializer(Serializer):
 
     nonce = data_fields.UInt64LEField()
 
+# TODO: Check if that inheritance is necessary (SerializableMessage).
+# There is no command set here and is not a protocol message.
 class Inventory(SerializableMessage):
     """
     The Inventory representation.
@@ -206,6 +208,7 @@ class InventoryVectorSerializer(Serializer):
     The serializer for the vector of inventories.
     """
     model_class = InventoryVector
+
     inventory = data_fields.ListField(InventorySerializer)
 
 class AddressVector(SerializableMessage):
@@ -231,6 +234,7 @@ class AddressVectorSerializer(Serializer):
     Serializer for the addresses vector.
     """
     model_class = AddressVector
+
     addresses = data_fields.ListField(IPv4AddressTimestampSerializer)
 
 class GetData(InventoryVector):
@@ -244,6 +248,7 @@ class GetDataSerializer(Serializer):
     Serializer for the GetData command.
     """
     model_class = GetData
+
     inventory = data_fields.ListField(InventorySerializer)
 
 class NotFound(GetData):
@@ -257,6 +262,7 @@ class NotFoundSerializer(Serializer):
     Serializer for the NotFound message.
     """
     model_class = NotFound
+
     inventory = data_fields.ListField(InventorySerializer)
 
 class OutPoint:
@@ -277,6 +283,7 @@ class OutPointSerializer(Serializer):
     The OutPoint representation serializer.
     """
     model_class = OutPoint
+
     out_hash = data_fields.Hash()
     index = data_fields.UInt32LEField()
 
@@ -299,6 +306,7 @@ class TxInSerializer(Serializer):
     The transaction input serializer.
     """
     model_class = TxIn
+
     previous_output = data_fields.NestedField(OutPointSerializer)
     signature_script = data_fields.VariableStringField()
     sequence = data_fields.UInt32LEField()
@@ -325,6 +333,7 @@ class TxOutSerializer(Serializer):
     The transaction output serializer.
     """
     model_class = TxOut
+
     value = data_fields.Int64LEField()
     pk_script = data_fields.VariableStringField()
 
@@ -376,11 +385,14 @@ class TxSerializer(Serializer):
     The transaction serializer.
     """
     model_class = Tx
+
     version = data_fields.UInt32LEField()
     tx_in = data_fields.ListField(TxInSerializer)
     tx_out = data_fields.ListField(TxOutSerializer)
     lock_time = data_fields.UInt32LEField()
 
+# TODO: Check if that inheritance is necessary (SerializableMessage).
+# There is no command set here and is not a protocol message.
 class BlockHeader(SerializableMessage):
     """
     The header of the block.
@@ -392,6 +404,8 @@ class BlockHeader(SerializableMessage):
         self.timestamp = 0
         self.bits = 0
         self.nonce = 0
+        # Dummy fields to make parsing BlockHeader
+        # compatible with Block parsing.
         self.txns_count = 0
         self.sig = 0
 
@@ -422,6 +436,7 @@ class BlockHeaderSerializer(Serializer):
     The serializer for the block header.
     """
     model_class = BlockHeader
+
     version = data_fields.UInt32LEField()
     prev_block = data_fields.Hash()
     merkle_root = data_fields.Hash()
@@ -447,7 +462,7 @@ class Block(BlockHeader):
         self.bits = 0
         self.nonce = 0
         self.txns = []
-        self.vch_block_sig = 0
+        self.block_sig = 0
 
     def __len__(self):
         return len(self.txns)
@@ -466,6 +481,7 @@ class BlockSerializer(Serializer):
     The deserializer for the blocks.
     """
     model_class = Block
+
     version = data_fields.UInt32LEField()
     prev_block = data_fields.Hash()
     merkle_root = data_fields.Hash()
@@ -473,7 +489,7 @@ class BlockSerializer(Serializer):
     bits = data_fields.UInt32LEField()
     nonce = data_fields.UInt32LEField()
     txns = data_fields.ListField(TxSerializer)
-    vch_block_sig = data_fields.VariableStringField()
+    block_sig = data_fields.VariableStringField()
 
 class HeaderVector(SerializableMessage):
     """
@@ -498,6 +514,7 @@ class HeaderVectorSerializer(Serializer):
     Serializer for the block header vector.
     """
     model_class = HeaderVector
+
     headers = data_fields.ListField(BlockHeaderSerializer)
 
 class MemPool(SerializableMessage):
@@ -541,6 +558,7 @@ class GetBlocksSerializer(Serializer):
     Serializer for getblocks message.
     """
     model_class = GetBlocks
+
     version = data_fields.UInt32LEField()
     hash_count = data_fields.VariableIntegerField()
     block_hashes = data_fields.BlockLocator()
@@ -563,6 +581,7 @@ class GetHeadersSerializer(Serializer):
     Serializer for getheaders message.
     """
     model_class = GetHeaders
+
     version = data_fields.UInt32LEField()
     hash_count = data_fields.VariableIntegerField()
     block_hashes = data_fields.BlockLocator()

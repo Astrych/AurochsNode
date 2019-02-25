@@ -7,6 +7,7 @@ from .secure_messages import serializers as smsg
 
 
 MESSAGE_MAPPING = {
+    # Network commands for main (core) consensus protocol.
     "version": core.VersionSerializer,
     "verack": core.VerAckSerializer,
     "ping": core.PingSerializer,
@@ -24,8 +25,8 @@ MESSAGE_MAPPING = {
     "getheaders": core.GetHeadersSerializer,
     "alert": core.AlertSerializer,
 
-    # Network messages of secure messages protocol.
-    # "smsgInv":,
+    # Network commands for secure messages protocol.
+    "smsgInv": smsg.SecureMessagesInventorySerializer,
     # "smsgShow":,
     # "smsgHave":,
     # "smsgWant":,
@@ -33,6 +34,6 @@ MESSAGE_MAPPING = {
     # "smsgMatch":,
     "smsgPing": smsg.SecureMessagesPingSerializer,
     "smsgPong": smsg.SecureMessagePongSerializer,
-    # "smsgDisabled":,
-    # "smsgIgnore":,
+    "smsgDisabled": smsg.SecureMessageDisabledSerializer,
+    "smsgIgnore": smsg.SecureMessageIgnoreSerializer,
 }
