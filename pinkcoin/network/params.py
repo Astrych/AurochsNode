@@ -4,7 +4,7 @@ Module with various network parameters.
 
 
 # The protocol version.
-PROTOCOL_VERSION = 60016
+PROTOCOL_VERSION = 60017
 
 # The network magic values.
 MAGIC_VALUES = {
@@ -35,13 +35,12 @@ INVENTORY_TYPE = {
 }
 
 HARDCODED_NODES = {
-    "my_node_on_aws": {"ip": "18.224.37.139", "port": 9134},
     "tokyo.pinkarmy.ml": {"ip": "45.32.49.237", "port": 9134},
     "sydney.pinkarmy.ml": {"ip": "45.76.125.31", "port": 9134},
     "singapore.pinkarmy.ml": {"ip": "45.77.36.238", "port": 9134},
     "paris.pinkarmy.ml": {"ip": "217.69.6.86", "port": 9134},
     "frankfurt.pinkarmy.ml": {"ip": "95.179.165.154", "port": 9134},
-    "primary": {"ip": "159.203.20.96", "port": 9134},
+    # "primary": {"ip": "159.203.20.96", "port": 9134},
 }
 
 # Time between pings automatically sent out for latency probing and keepalive (in seconds).
